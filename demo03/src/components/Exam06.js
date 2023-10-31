@@ -19,6 +19,7 @@ const Exam06 = () => {
         //info에서 이벤트가 발생한 태그명에 해당하는 필드만 입력값으로 바꾸고 나머진 그대로 둬라
         //- ...info는 info의 나머지 항목을 의미함(rest연산)
         //- 객체에 []표시를 쓰면 필드명을 변수로 지정할 수 있다
+        // ...은 '전개해라' 라는 뜻
         setInfo({
             ...info,
             [e.target.name]: e.target.value
