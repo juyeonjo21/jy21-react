@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import {Modal} from "bootstrap/dist/js/bootstrap.esm";
+import { useEffect, useRef, useState } from "react";
+import { Modal } from "bootstrap/dist/js/bootstrap.esm";
 
 const Exam10 = () => {
     const [items, setItems] = useState([
@@ -20,6 +20,12 @@ const Exam10 = () => {
         itemPrice: "",
         itemType: "",
     });
+
+    //useRef : 특정 대상(태그)을 참조할 수 있는 훅
+    //- const 이름 = useRef(초기값);
+    //- 태그에 ref라는 속성으로 이름을 지정해두면 언제든지 불러서 사용할 수 있다
+    const bsModal = useRef();
+
 
     const changeData = e => {
         const newData = {
@@ -163,7 +169,7 @@ const Exam10 = () => {
         ];
         setBackup(newBackup);
 
-        //입력창 초기화
+           //입력창 초기화
         setData({
             itemName: "",
             itemPrice: "",
@@ -174,129 +180,163 @@ const Exam10 = () => {
         closeModal();
     };
 
-    //모달 여는 함수
-    const openModal = ()=>{
-        var modal = new Modal(document.querySelector("#exampleModal"));
-        modal.show();
-    };
+        //모달창 취소 버튼
+        const cancelAddItem = () => {
+            //입력창 초기화
+            setData({
+                itemName: "",
+                itemPrice: "",
+                itemType: "",
+            });
 
-     //모달 닫는 함수
-     const closeModal = ()=>{
-        var modal = new Modal(document.querySelector("#exampleModal"));
-        modal.hide();
-    };
-   
+            //모달 닫기
+            closeModal();
+        };
+
+
+        //모달 여는 함수
+        const openModal = () => {
+            //var modal = new Modal(document.querySelector("#exampleModal"));//VanillaJS style
+            var modal = new Modal(bsModal.current);//React style
+            modal.show();
+        };
+
+        //모달 닫는 함수
+        const closeModal = () => {
+            // var modal = Modal.getInstance(document.querySelector("#exampleModal"));//VanillaJS style
+            var modal = Modal.getInstance(bsModal.current);//React style
+            modal.hide();
+        };
+
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-md-10 offset-md-1">
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-md-10 offset-md-1">
 
-                    <div className="p-4 text-light bg-dark rounded">
-                        <h1>상품 목록</h1>
-                    </div>
-
-                    <div className="row mt-4">
-                        <div className="col">
-                            <button type="button" className="btn btn-primary"
-                                                                onClick={openModal}>
-                                신규등록
-                            </button>
+                        <div className="p-4 text-light bg-dark rounded">
+                            <h1>상품 목록</h1>
                         </div>
-                    </div>
 
-                    
-
-                    <div className="row mt-4">
-                        <div className="col">
-
-                            <table class="table table-hover" data-bs-theme="light">
-                                <thead>
-                                    <tr class="table text-center">
-                                        <th>번호</th>
-                                        <th>상품명</th>
-                                        <th>판매가</th>
-                                        <th>분류</th>
-                                        <th>상태</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {items.map((item, index) => (
-                                        item.edit ? (
-                                            <tr key={item.itemNo} className="table text-center">
-                                                <td>{item.itemNo}</td>
-                                                <td>
-                                                    <input className="form-control" type="text" name="itemName" value={item.itemName} onChange={e => changeItem(item, e)} />
-                                                </td>
-                                                <td>
-                                                    <input className="form-control" type="text" name="itemPrice" value={item.itemPrice} onChange={e => changeItem(item, e)} />
-                                                </td>
-                                                <td>
-                                                    <input className="form-control" type="text" name="itemType" value={item.itemType} onChange={e => changeItem(item, e)} />
-                                                </td>
-                                                <td>
-                                                    <button className="btn btn-sm btn-secondary"
-                                                        onClick={e => cancelItem(item)}>취소</button>
-                                                    <button className="btn btn-sm btn-success ms-1"
-                                                        onClick={e => saveItem(item)}>완료</button>
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            <tr key={item.itemNo} className="table text-center">
-                                                <td>{item.itemNo}</td>
-                                                <td>{item.itemName}</td>
-                                                <td>{item.itemPrice}원</td>
-                                                <td>{item.itemType}</td>
-                                                <td>
-                                                    <button className="btn btn-sm btn-warning"
-                                                        onClick={e => changeToEdit(item)}>수정</button>
-                                                    <button className="btn btn-sm btn-danger ms-1"
-                                                        onClick={e => deleteItem(item)}>삭제</button>
-                                                </td>
-                                            </tr>
-
-                                        )
-
-                                    ))}
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            {/* Modal */}
-            <div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">신규등록</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
                         <div className="row mt-4">
-                        <div className="col">
-                            <input name="itemName" value={data.itemName} onChange={changeData} />
-                            <input name="itemPrice" value={data.itemPrice} onChange={changeData} />
-                            <input name="itemType" value={data.itemType} onChange={changeData} />
-                            <button type="button" className="btn btn-primary ms-2"
-                                onClick={addItem}>추가</button>
+                            <div className="col">
+                                <button type="button" className="btn btn-primary"
+                                    onClick={openModal}>
+                                    신규등록
+                                </button>
+                            </div>
                         </div>
+
+
+
+                        <div className="row mt-4">
+                            <div className="col">
+
+                                <table class="table table-hover" data-bs-theme="light">
+                                    <thead>
+                                        <tr class="table text-center">
+                                            <th>번호</th>
+                                            <th>상품명</th>
+                                            <th>판매가</th>
+                                            <th>분류</th>
+                                            <th>상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {items.map((item, index) => (
+                                            item.edit ? (
+                                                <tr key={item.itemNo} className="table text-center">
+                                                    <td>{item.itemNo}</td>
+                                                    <td>
+                                                        <input className="form-control" type="text" name="itemName" value={item.itemName} onChange={e => changeItem(item, e)} />
+                                                    </td>
+                                                    <td>
+                                                        <input className="form-control" type="text" name="itemPrice" value={item.itemPrice} onChange={e => changeItem(item, e)} />
+                                                    </td>
+                                                    <td>
+                                                        <input className="form-control" type="text" name="itemType" value={item.itemType} onChange={e => changeItem(item, e)} />
+                                                    </td>
+                                                    <td>
+                                                        <button className="btn btn-sm btn-secondary"
+                                                            onClick={e => cancelItem(item)}>취소</button>
+                                                        <button className="btn btn-sm btn-success ms-1"
+                                                            onClick={e => saveItem(item)}>완료</button>
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                <tr key={item.itemNo} className="table text-center">
+                                                    <td>{item.itemNo}</td>
+                                                    <td>{item.itemName}</td>
+                                                    <td>{item.itemPrice}원</td>
+                                                    <td>{item.itemType}</td>
+                                                    <td>
+                                                        <button className="btn btn-sm btn-warning"
+                                                            onClick={e => changeToEdit(item)}>수정</button>
+                                                        <button className="btn btn-sm btn-danger ms-1"
+                                                            onClick={e => deleteItem(item)}>삭제</button>
+                                                    </td>
+                                                </tr>
+
+                                            )
+
+                                        ))}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
                     </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
+                </div>
+
+                {/* Modal */}
+                <div className="modal fade" ref={bsModal} id="exampleModal"
+                    tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">신규등록</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="row mt-4">
+                                    <div className="col">
+                                        <label className="form-label">상품명</label>
+                                        <input className="form-control" name="itemName" value={data.itemName} onChange={changeData} />
+                                    </div>
+                                </div>
+                                <div className="row mt-4">
+                                    <div className="col">
+                                        <label className="form-label">판매가</label>
+                                        <input className="form-control" name="itemPrice" value={data.itemPrice} onChange={changeData} />
+                                    </div>
+                                </div>
+                                <div className="row mt-4">
+                                    <div className="col">
+                                        <label className="form-label">분류</label>
+                                        <input className="form-control" name="itemType" value={data.itemType} onChange={changeData} />
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className="modal-footer">
+                                {/* 자동 취소 -추가하면 자동으로 닫힘 */}
+                                {/* <button type="button" className="btn btn-dark" data-dismiss="modal">취소</button> */}
+                                {/* 수동으로 원하는 로직을 추가하여 닫히게 하는 버튼 */}
+                                <button type="button" className="btn btn-dark"
+                                    onClick={cancelAddItem}>취소</button>
+                                <button type="button" className="btn btn-primary ms-2"
+                                    onClick={addItem}>추가</button>
+
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
+        );
+    };
 
-        </div>
-    );
-};
-
-export default Exam10;
+    export default Exam10;
